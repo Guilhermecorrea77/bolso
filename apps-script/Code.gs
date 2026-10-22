@@ -36,7 +36,8 @@ function getSheet_() {
 
 // Leitura: devolve todas as linhas (com cabeçalho) como texto.
 function doGet(e) {
-  if (!authorized_(e.parameter.token)) return json_({ error: 'Senha incorreta ou TOKEN não configurado no Apps Script.' });
+  var token = e && e.parameter ? e.parameter.token : '';
+  if (!authorized_(token)) return json_({ error: 'Senha incorreta ou TOKEN não configurado no Apps Script.' });
   var sh = getSheet_();
   return json_({ values: sh.getDataRange().getDisplayValues() });
 }
@@ -45,6 +46,7 @@ function doGet(e) {
 function doPost(e) {
   var body;
   try { body = JSON.parse(e.postData.contents); } catch (err) { return json_({ error: 'Dados inválidos.' }); }
+  if (!body) return json_({ error: 'Dados inválidos.' });
   if (!authorized_(body.token)) return json_({ error: 'Senha incorreta ou TOKEN não configurado no Apps Script.' });
 
   var lock = LockService.getScriptLock();
